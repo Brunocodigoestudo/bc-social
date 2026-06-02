@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BC Social Generator — Bruno Corrêa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --navy:#0a0d18;
+    --navy2:#12162b;
+    --purple:#7c6fcd;
+    --lpurple:#a99fe8;
+    --white:#f5f4ff;
+    --muted:#6b6f8a;
+    --border:#1e2240;
+  }
+  html,body{min-height:100vh;background:var(--navy);color:var(--white);font-family:'Inter',sans-serif}
+
+  /* ── HEADER ── */
+  header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 28px;border-bottom:1px solid var(--border);
+    background:rgba(10,13,24,.92);backdrop-filter:blur(12px);
+    position:sticky;top:0;z-index:100;
+  }
+  .logo-badge{
+    width:36px;height:36px;background:linear-gradient(135deg,var(--purple),var(--lpurple));
+    clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:.05em;color:#fff;
+    flex-shrink:0;
+  }
+  .brand{display:flex;align-items:center;gap:10px}
+  .brand-text{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;letter-spacing:.02em}
+  .brand-text span{color:var(--lpurple)}
+  .version{font-size:11px;color:var(--muted);background:var(--navy2);border:1px solid var(--border);padding:3px 9px;border-radius:20px}
+
+  /* ── LAYOUT ── */
+  .layout{display:flex;gap:0;min-height:calc(100vh - 61px)}
+
+  /* ── SIDEBAR ── */
+  .sidebar{
+    width:300px;flex-shrink:0;border-right:1px solid var(--border);
+    padding:24px 20px;overflow-y:auto;background:var(--navy);
+  }
+  .section-title{
+    font-family:'Syne',sans-serif;font-size:10px;font-weight:700;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+    margin-bottom:12px;margin-top:24px;
+  }
+  .section-title:first-child{margin-top:0}
+
+  /* Format pills */
+  .format-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .fmt-btn{
+    border:1px solid var(--border);background:var(--navy2);border-radius:10px;
+    padding:12px 10px;cursor:pointer;text-align:center;transition:all .15s;
+  }
+  .fmt-btn:hover{border-color:var(--purple);background:rgba(124,111,205,.08)}
+  .fmt-btn.active{border-color:var(--purple);background:rgba(124,111,205,.15)}
+  .fmt-btn .fmt-icon{font-size:18px;margin-bottom:4px}
+  .fmt-btn .fmt-label{font-size:11px;font-weight:600;color:var(--white);display:block}
+  .fmt-btn .fmt-size{font-size:10px;color:var(--muted);display:block;margin-top:1px}
+
+  /* Controls */
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;margin-top:14px;font-weight:500}
+  label:first-of-type{margin-top:0}
+  input[type=text],input[type=color],select,textarea{
+    width:100%;background:var(--navy2);border:1px solid var(--border);border-radius:8px;
+    color:var(--white);font-family:'Inter',sans-serif;font-size:13px;padding:8px 11px;
+    outline:none;transition:border-color .15s;
+  }
+  input[type=text]:focus,select:focus,textarea:focus{border-color:var(--purple)}
+  textarea{resize:none;height:72px;line-height:1.5}
+  select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b6f8a' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+
+  /* Color row */
+  .color-row{display:flex;gap:8px;align-items:center}
+  .color-row input[type=color]{width:38px;height:38px;padding:2px;cursor:pointer;border-radius:8px;flex-shrink:0}
+  .color-row input[type=text]{flex:1}
+
+  /* Toggle */
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;margin-top:12px}
+  .toggle-label{font-size:12px;color:var(--muted);font-weight:500}
+  .toggle{position:relative;width:36px;height:20px}
+  .toggle input{opacity:0;width:0;height:0}
+  .toggle-slider{
+    position:absolute;inset:0;background:var(--border);border-radius:20px;cursor:pointer;transition:.2s;
+  }
+  .toggle-slider:before{
+    content:'';position:absolute;width:14px;height:14px;left:3px;bottom:3px;
+    background:#fff;border-radius:50%;transition:.2s;
+  }
+  .toggle input:checked+.toggle-slider{background:var(--purple)}
+  .toggle input:checked+.toggle-slider:before{transform:translateX(16px)}
+
+  /* Render button */
+  .render-btn{
+    width:100%;margin-top:20px;padding:13px;
+    background:linear-gradient(135deg,var(--purple),var(--lpurple));
+    border:none;border-radius:10px;color:#fff;
+    font-family:'Syne',sans-serif;font-weight:700;font-size:14px;
+    letter-spacing:.04em;cursor:pointer;transition:opacity .15s;
+  }
+  .render-btn:hover{opacity:.88}
+
+  /* ── CANVAS AREA ── */
+  .canvas-area{
+    flex:1;display:flex;flex-direction:column;align-items:center;
+    justify-content:flex-start;padding:32px 24px;gap:24px;overflow-y:auto;
+  }
+  .canvas-wrap{
+    position:relative;border-radius:14px;overflow:hidden;
+    box-shadow:0 0 0 1px var(--border),0 20px 60px rgba(0,0,0,.5);
+    max-width:100%;
+  }
+  canvas{display:block;max-width:100%;height:auto}
+
+  /* Download bar */
+  .dl-bar{
+    display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+  }
+  .dl-btn{
+    display:flex;align-items:center;gap:7px;padding:10px 18px;
+    background:var(--navy2);border:1px solid var(--border);border-radius:9px;
+    color:var(--white);font-size:13px;font-weight:600;cursor:pointer;
+    text-decoration:none;transition:all .15s;font-family:'Inter',sans-serif;
+  }
+  .dl-btn:hover{border-color:var(--purple);background:rgba(124,111,205,.12)}
+  .dl-btn svg{flex-shrink:0}
+
+  /* iOS hint */
+  .ios-hint{
+    font-size:12px;color:var(--muted);text-align:center;
+    background:var(--navy2);border:1px solid var(--border);
+    border-radius:8px;padding:10px 16px;max-width:480px;line-height:1.6;
+  }
+  .ios-hint strong{color:var(--lpurple)}
+
+  /* Checkerboard bg for transparent preview */
+  .checker{background:
+    repeating-conic-gradient(#2a2d44 0% 25%,#1a1d32 0% 50%)
+    0 0/24px 24px;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width:640px){
+    .sidebar{width:100%;border-right:none;border-bottom:1px solid var(--border)}
+    .layout{flex-direction:column}
+    header{padding:14px 16px}
+    .canvas-area{padding:20px 12px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo-badge">BC</div>
+    <span class="brand-text">Social <span>Generator</span></span>
+  </div>
+  <span class="version">v2.0</span>
+</header>
+
+<div class="layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+
+    <div class="section-title">Formato</div>
+    <div class="format-grid">
+      <button class="fmt-btn active" onclick="setFormat('linkedin')" id="btn-linkedin">
+        <div class="fmt-icon">💼</div>
+        <span class="fmt-label">LinkedIn</span>
+        <span class="fmt-size">1200 × 627</span>
+      </button>
+      <button class="fmt-btn" onclick="setFormat('instagram')" id="btn-instagram">
+        <div class="fmt-icon">📸</div>
+        <span class="fmt-label">Instagram</span>
+        <span class="fmt-size">1080 × 1080</span>
+      </button>
+      <button class="fmt-btn" onclick="setFormat('story')" id="btn-story">
+        <div class="fmt-icon">📱</div>
+        <span class="fmt-label">Stories</span>
+        <span class="fmt-size">1080 × 1920</span>
+      </button>
+      <button class="fmt-btn" onclick="setFormat('avatar')" id="btn-avatar">
+        <div class="fmt-icon">👤</div>
+        <span class="fmt-label">Avatar</span>
+        <span class="fmt-size">800 × 800</span>
+      </button>
+    </div>
+
+    <div class="section-title">Conteúdo</div>
+
+    <label>Linha principal</label>
+    <input type="text" id="main-text" value="Bruno Corrêa" oninput="render()">
+
+    <label>Subtítulo</label>
+    <input type="text" id="sub-text" value="Dados & IA · Hospital Einstein" oninput="render()">
+
+    <label>Tag / CTA</label>
+    <input type="text" id="tag-text" value="brunocorreatech.com" oninput="render()">
+
+    <label>Estilo de layout</label>
+    <select id="layout-style" onchange="render()">
+      <option value="centered">Centralizado</option>
+      <option value="left">Alinhado à esquerda</option>
+      <option value="split">Split (badge + texto)</option>
+    </select>
+
+    <div class="section-title">Cores</div>
+
+    <label>Cor de fundo</label>
+    <div class="color-row">
+      <input type="color" id="bg-color" value="#0a0d18" oninput="syncColor('bg-color','bg-hex');render()">
+      <input type="text" id="bg-hex" value="#0a0d18" oninput="syncHex('bg-hex','bg-color');render()" maxlength="7">
+    </div>
+
+    <label>Cor de destaque</label>
+    <div class="color-row">
+      <input type="color" id="accent-color" value="#7c6fcd" oninput="syncColor('accent-color','accent-hex');render()">
+      <input type="text" id="accent-hex" value="#7c6fcd" oninput="syncHex('accent-hex','accent-color');render()" maxlength="7">
+    </div>
+
+    <label>Cor do texto</label>
+    <div class="color-row">
+      <input type="color" id="text-color" value="#f5f4ff" oninput="syncColor('text-color','text-hex');render()">
+      <input type="text" id="text-hex" value="#f5f4ff" oninput="syncHex('text-hex','text-color');render()" maxlength="7">
+    </div>
+
+    <div class="section-title">Opções</div>
+
+    <div class="toggle-row">
+      <span class="toggle-label">Fundo transparente (PNG)</span>
+      <label class="toggle">
+        <input type="checkbox" id="transparent-bg" onchange="toggleTransparent()">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
+      <span class="toggle-label">Mostrar badge BC</span>
+      <label class="toggle">
+        <input type="checkbox" id="show-badge" checked onchange="render()">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
+      <span class="toggle-label">Mostrar grid de fundo</span>
+      <label class="toggle">
+        <input type="checkbox" id="show-grid" checked onchange="render()">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <button class="render-btn" onclick="render()">↻ Gerar imagem</button>
+
+  </aside>
+
+  <!-- ── CANVAS AREA ── -->
+  <main class="canvas-area">
+    <div class="canvas-wrap" id="canvas-wrap">
+      <canvas id="c"></canvas>
+    </div>
+    <div class="dl-bar">
+      <button class="dl-btn" onclick="download('png')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Baixar PNG
+      </button>
+      <button class="dl-btn" onclick="copyToClipboard()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copiar imagem
+      </button>
+    </div>
+    <div class="ios-hint">
+      📱 <strong>iPad / iPhone:</strong> toque em "Baixar PNG" → segure a imagem que abrir → "Salvar na Fotos" ou "Adicionar ao Arquivos"
+    </div>
+  </main>
+
+</div>
+
+<script>
+// ── STATE ──
+let currentFormat = 'linkedin';
+let isTransparent = false;
+
+const FORMATS = {
+  linkedin:  { w:1200, h:627  },
+  instagram: { w:1080, h:1080 },
+  story:     { w:1080, h:1920 },
+  avatar:    { w:800,  h:800  },
+};
+
+// ── HELPERS ──
+function g(id){ return document.getElementById(id) }
+function val(id){ return g(id).value.trim() }
+
+function setFormat(fmt){
+  currentFormat = fmt;
+  document.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active'));
+  g('btn-'+fmt).classList.add('active');
+  render();
+}
+
+function syncColor(colorId, hexId){
+  g(hexId).value = g(colorId).value;
+}
+function syncHex(hexId, colorId){
+  const v = g(hexId).value;
+  if(/^#[0-9a-fA-F]{6}$/.test(v)) g(colorId).value = v;
+}
+
+function toggleTransparent(){
+  isTransparent = g('transparent-bg').checked;
+  const wrap = g('canvas-wrap');
+  wrap.classList.toggle('checker', isTransparent);
+  render();
+}
+
+// ── DRAW ──
+function render(){
+  const fmt    = FORMATS[currentFormat];
+  const canvas = g('c');
+  const ctx    = canvas.getContext('2d');
+  const W = fmt.w, H = fmt.h;
+
+  canvas.width  = W;
+  canvas.height = H;
+
+  const bgColor     = val('bg-color');
+  const accentColor = val('accent-color');
+  const textColor   = val('text-color');
+  const mainText    = val('main-text')   || 'Bruno Corrêa';
+  const subText     = val('sub-text')    || 'Dados & IA';
+  const tagText     = val('tag-text')    || 'brunocorreatech.com';
+  const layoutStyle = val('layout-style');
+  const showBadge   = g('show-badge').checked;
+  const showGrid    = g('show-grid').checked;
+
+  // ── Background ──
+  if(isTransparent){
+    ctx.clearRect(0,0,W,H);
+  } else {
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0,0,W,H);
+
+    // subtle radial glow
+    const grd = ctx.createRadialGradient(W*.5,H*.5,0,W*.5,H*.5,W*.65);
+    grd.addColorStop(0, hexAlpha(accentColor,.12));
+    grd.addColorStop(1, 'transparent');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0,0,W,H);
+  }
+
+  // ── Dot grid ──
+  if(showGrid && !isTransparent){
+    const spacing = Math.round(W/28);
+    ctx.fillStyle = hexAlpha(accentColor, .18);
+    for(let x=spacing;x<W;x+=spacing){
+      for(let y=spacing;y<H;y+=spacing){
+        ctx.beginPath();
+        ctx.arc(x,y,1.2,0,Math.PI*2);
+        ctx.fill();
+      }
+    }
+  }
+
+  // ── Corner accent lines ──
+  if(!isTransparent){
+    const lineLen = W * .1;
+    const pad = W * .04;
+    ctx.strokeStyle = hexAlpha(accentColor,.4);
+    ctx.lineWidth = 1.5;
+    // top-left
+    strokeCorner(ctx, pad, pad, lineLen, 1, 1);
+    // bottom-right
+    strokeCorner(ctx, W-pad, H-pad, lineLen, -1, -1);
+    // top-right (lighter)
+    ctx.strokeStyle = hexAlpha(accentColor,.2);
+    strokeCorner(ctx, W-pad, pad, lineLen, -1, 1);
+  }
+
+  // ── Layout positions ──
+  const isSquare = (currentFormat==='instagram'||currentFormat==='avatar');
+  const isStory  = currentFormat==='story';
+
+  let cx = W/2, cy = H/2;
+  let textX = W/2, align = 'center';
+
+  if(layoutStyle==='left'){
+    textX = W*.08; align='left';
+  } else if(layoutStyle==='split'){
+    textX = showBadge ? W*.48 : W/2;
+    align = showBadge ? 'left' : 'center';
+  }
+
+  // Vertical centering
+  const badgeR  = Math.round(W * (isStory?.07:.075));
+  const badgeX  = layoutStyle==='split' ? W*.22 : (layoutStyle==='left' ? W*.08+badgeR : cx);
+  const badgeY  = isStory ? cy*.7 : cy;
+
+  const mainFS  = Math.round(W*(isStory?.065:.07));
+  const subFS   = Math.round(mainFS*.44);
+  const tagFS   = Math.round(mainFS*.32);
+
+  const totalH  = badgeR*2 + mainFS*1.4 + subFS*1.4 + tagFS*1.8 + (W*.025);
+  const startY  = layoutStyle==='split'
+    ? cy - (mainFS*1.4 + subFS*1.4 + tagFS*1.8)/2
+    : cy - totalH/2;
+
+  // ── Badge ──
+  if(showBadge){
+    const bx = layoutStyle==='split' ? badgeX : cx;
+    const by = layoutStyle==='split' ? cy : startY + badgeR;
+
+    // hexagon glow
+    ctx.save();
+    ctx.shadowColor = accentColor;
+    ctx.shadowBlur  = badgeR*.6;
+    drawHex(ctx, bx, by, badgeR, accentColor, true);
+    ctx.restore();
+
+    drawHex(ctx, bx, by, badgeR, accentColor, false);
+
+    // "BC" text
+    ctx.fillStyle = '#fff';
+    ctx.font = `800 ${Math.round(badgeR*.58)}px 'Syne', sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('BC', bx, by);
+  }
+
+  // ── Text block ──
+  const tyStartY = layoutStyle==='split'
+    ? startY
+    : (showBadge ? startY + badgeR*2 + W*.025 : cy - (mainFS + subFS*1.5 + tagFS*1.5)/2);
+
+  // Main name
+  ctx.font      = `700 ${mainFS}px 'Syne', sans-serif`;
+  ctx.fillStyle = textColor;
+  ctx.textAlign = align;
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText(mainText, textX, tyStartY + mainFS);
+
+  // Sub
+  ctx.font      = `500 ${subFS}px 'Inter', sans-serif`;
+  ctx.fillStyle = hexAlpha(textColor, .7);
+  ctx.fillText(subText, textX, tyStartY + mainFS + subFS*1.6);
+
+  // Divider line
+  const divY = tyStartY + mainFS + subFS*1.6 + subFS*.7;
+  const divLen = mainFS * 2.2;
+  const divX0  = align==='center' ? textX - divLen/2 : (align==='left' ? textX : textX - divLen);
+  const divGrd = ctx.createLinearGradient(divX0, divY, divX0+divLen, divY);
+  divGrd.addColorStop(0, hexAlpha(accentColor,.8));
+  divGrd.addColorStop(1, 'transparent');
+  ctx.strokeStyle = divGrd;
+  ctx.lineWidth   = 2;
+  ctx.beginPath();
+  ctx.moveTo(divX0, divY);
+  ctx.lineTo(divX0+divLen, divY);
+  ctx.stroke();
+
+  // Tag
+  ctx.font      = `500 ${tagFS}px 'Inter', sans-serif`;
+  ctx.fillStyle = hexAlpha(accentColor, .9);
+  ctx.fillText(tagText, textX, divY + tagFS*1.8);
+
+  // ── Resize canvas display ──
+  const wrap = g('canvas-wrap');
+  const maxW = wrap.parentElement.clientWidth - 48;
+  const scale = Math.min(1, maxW / W);
+  canvas.style.width  = Math.round(W * scale) + 'px';
+  canvas.style.height = Math.round(H * scale) + 'px';
+}
+
+// ── Draw hexagon ──
+function drawHex(ctx, cx, cy, r, color, glow){
+  ctx.beginPath();
+  for(let i=0;i<6;i++){
+    const a = Math.PI/180*(60*i-30);
+    i===0 ? ctx.moveTo(cx+r*Math.cos(a),cy+r*Math.sin(a))
+          : ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));
+  }
+  ctx.closePath();
+  if(glow){
+    ctx.fillStyle = hexAlpha(color,.15);
+    ctx.fill();
+  } else {
+    const grd = ctx.createLinearGradient(cx-r,cy-r,cx+r,cy+r);
+    grd.addColorStop(0, color);
+    grd.addColorStop(1, lighten(color,30));
+    ctx.fillStyle = grd;
+    ctx.fill();
+  }
+}
+
+// ── Corner bracket ──
+function strokeCorner(ctx, x, y, len, dx, dy){
+  ctx.beginPath();
+  ctx.moveTo(x, y+dy*len);
+  ctx.lineTo(x, y);
+  ctx.lineTo(x+dx*len, y);
+  ctx.stroke();
+}
+
+// ── Color utils ──
+function hexAlpha(hex, a){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+function lighten(hex, amt){
+  let r=parseInt(hex.slice(1,3),16)+amt,
+      g=parseInt(hex.slice(3,5),16)+amt,
+      b=parseInt(hex.slice(5,7),16)+amt;
+  r=Math.min(255,r);g=Math.min(255,g);b=Math.min(255,b);
+  return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+
+// ── Download ──
+function download(type){
+  const canvas = g('c');
+  const name   = `bc-${currentFormat}-${Date.now()}.${type}`;
+  const url    = canvas.toDataURL('image/png');
+  const a      = document.createElement('a');
+  a.href = url; a.download = name; a.target='_blank';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  // fallback: open in new tab (iOS)
+  setTimeout(()=>{ window.open(url,'_blank') }, 300);
+}
+
+async function copyToClipboard(){
+  const canvas = g('c');
+  try {
+    canvas.toBlob(async blob => {
+      await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
+      const btn = document.querySelector('.dl-btn:last-child');
+      const orig = btn.innerHTML;
+      btn.innerHTML = '✓ Copiado!';
+      setTimeout(()=>btn.innerHTML=orig, 1800);
+    });
+  } catch(e){
+    download('png');
+  }
+}
+
+// ── Init ──
+render();
+window.addEventListener('resize', ()=>render());
+</script>
+</body>
+</html>
