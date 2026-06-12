@@ -262,6 +262,14 @@
     </div>
 
     <div class="toggle-row">
+      <span class="toggle-label">Fundo no badge (glow)</span>
+      <label class="toggle">
+        <input type="checkbox" id="badge-glow" checked onchange="render()">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
       <span class="toggle-label">Mostrar grid de fundo</span>
       <label class="toggle">
         <input type="checkbox" id="show-grid" checked onchange="render()">
@@ -429,14 +437,18 @@ function render(){
     const bx = layoutStyle==='split' ? badgeX : cx;
     const by = layoutStyle==='split' ? cy : startY + badgeR;
 
-    // hexagon glow
-    ctx.save();
-    ctx.shadowColor = accentColor;
-    ctx.shadowBlur  = badgeR*.6;
-    drawHex(ctx, bx, by, badgeR, accentColor, true);
-    ctx.restore();
+    const badgeGlow = g('badge-glow').checked;
 
-    drawHex(ctx, bx, by, badgeR, accentColor, false);
+    // hexagon glow
+    if(badgeGlow){
+      ctx.save();
+      ctx.shadowColor = accentColor;
+      ctx.shadowBlur  = badgeR*.6;
+      drawHex(ctx, bx, by, badgeR, accentColor, true);
+      ctx.restore();
+    }
+
+    drawHex(ctx, bx, by, badgeR, accentColor, false, badgeGlow);
 
     // "BC" text
     ctx.fillStyle = accentColor;
@@ -491,7 +503,7 @@ function render(){
 }
 
 // ── Draw hexagon ──
-function drawHex(ctx, cx, cy, r, color, glow){
+function drawHex(ctx, cx, cy, r, color, glow, fillInside=true){
   ctx.beginPath();
   for(let i=0;i<6;i++){
     const a = Math.PI/180*(60*i-30);
@@ -503,8 +515,10 @@ function drawHex(ctx, cx, cy, r, color, glow){
     ctx.fillStyle = hexAlpha(color,.15);
     ctx.fill();
   } else {
-    ctx.fillStyle = '#0a0d18';
-    ctx.fill();
+    if(fillInside){
+      ctx.fillStyle = '#0a0d18';
+      ctx.fill();
+    }
     ctx.lineWidth = r*.08;
     ctx.strokeStyle = color;
     ctx.stroke();
