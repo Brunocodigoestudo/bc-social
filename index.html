@@ -438,7 +438,7 @@ function render(){
     drawHex(ctx, bx, by, badgeR, accentColor, false);
 
     // "BC" text
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = accentColor;
     ctx.font = `800 ${Math.round(badgeR*.58)}px 'Syne', sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -502,11 +502,11 @@ function drawHex(ctx, cx, cy, r, color, glow){
     ctx.fillStyle = hexAlpha(color,.15);
     ctx.fill();
   } else {
-    const grd = ctx.createLinearGradient(cx-r,cy-r,cx+r,cy+r);
-    grd.addColorStop(0, color);
-    grd.addColorStop(1, lighten(color,30));
-    ctx.fillStyle = grd;
+    ctx.fillStyle = '#0a0d18';
     ctx.fill();
+    ctx.lineWidth = r*.08;
+    ctx.strokeStyle = color;
+    ctx.stroke();
   }
 }
 
