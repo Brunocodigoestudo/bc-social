@@ -270,6 +270,14 @@
     </div>
 
     <div class="toggle-row">
+      <span class="toggle-label">Borda dupla no badge</span>
+      <label class="toggle">
+        <input type="checkbox" id="badge-double" onchange="render()">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
       <span class="toggle-label">Mostrar grid de fundo</span>
       <label class="toggle">
         <input type="checkbox" id="show-grid" checked onchange="render()">
@@ -449,6 +457,20 @@ function render(){
     }
 
     drawHex(ctx, bx, by, badgeR, accentColor, false, badgeGlow);
+
+    if(g('badge-double').checked){
+      ctx.lineWidth = badgeR*.05;
+      ctx.strokeStyle = hexAlpha(accentColor,.6);
+      ctx.beginPath();
+      for(let i=0;i<6;i++){
+        const a = Math.PI/180*(60*i-30);
+        const rr = badgeR*.82;
+        i===0 ? ctx.moveTo(bx+rr*Math.cos(a), by+rr*Math.sin(a))
+              : ctx.lineTo(bx+rr*Math.cos(a), by+rr*Math.sin(a));
+      }
+      ctx.closePath();
+      ctx.stroke();
+    }
 
     // "BC" text
     ctx.fillStyle = accentColor;
