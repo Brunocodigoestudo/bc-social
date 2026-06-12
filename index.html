@@ -13,7 +13,7 @@
     --navy2:#12162b;
     --purple:#7c6fcd;
     --lpurple:#a99fe8;
-    --white:#f5f4ff;
+    --white:#f5f4fb;
     --muted:#6b6f8a;
     --border:#1e2240;
   }
@@ -25,7 +25,18 @@
     padding:18px 28px;border-bottom:1px solid var(--border);
     background:rgba(10,13,24,.92);backdrop-filter:blur(12px);
     position:sticky;top:0;z-index:100;
+    overflow:hidden;
   }
+  header::before{
+    content:'';position:absolute;
+    width:280px;height:280px;
+    background:radial-gradient(circle, var(--purple) 0%, transparent 70%);
+    opacity:.35;
+    top:-140px;right:-60px;
+    border-radius:50%;
+    pointer-events:none;
+  }
+  header > *{position:relative;z-index:1}
   .logo-badge{
     width:36px;height:36px;position:relative;
     flex-shrink:0;
@@ -243,8 +254,8 @@
 
     <label>Cor do texto</label>
     <div class="color-row">
-      <input type="color" id="text-color" value="#f5f4ff" oninput="syncColor('text-color','text-hex');render()">
-      <input type="text" id="text-hex" value="#f5f4ff" oninput="syncHex('text-hex','text-color');render()" maxlength="7">
+      <input type="color" id="text-color" value="#f5f4fb" oninput="syncColor('text-color','text-hex');render()">
+      <input type="text" id="text-hex" value="#f5f4fb" oninput="syncHex('text-hex','text-color');render()" maxlength="7">
     </div>
 
     <div class="section-title">Opções</div>
