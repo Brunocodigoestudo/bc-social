@@ -27,12 +27,22 @@
     position:sticky;top:0;z-index:100;
   }
   .logo-badge{
-    width:36px;height:36px;background:linear-gradient(135deg,var(--purple),var(--lpurple));
-    clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+    width:36px;height:36px;position:relative;
+    flex-shrink:0;
     display:flex;align-items:center;justify-content:center;
     font-family:'Syne',sans-serif;font-weight:800;font-size:13px;letter-spacing:.05em;color:#fff;
-    flex-shrink:0;
   }
+  .logo-badge::before{
+    content:'';position:absolute;inset:0;
+    background:var(--lpurple);
+    clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+  }
+  .logo-badge::after{
+    content:'';position:absolute;inset:2px;
+    background:var(--navy);
+    clip-path:polygon(50% 0%,93% 25%,93% 75%,50% 100%,7% 75%,7% 25%);
+  }
+  .logo-badge span{position:relative;z-index:1}
   .brand{display:flex;align-items:center;gap:10px}
   .brand-text{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;letter-spacing:.02em}
   .brand-text span{color:var(--lpurple)}
@@ -159,7 +169,7 @@
 
 <header>
   <div class="brand">
-    <div class="logo-badge">BC</div>
+    <div class="logo-badge"><span>BC</span></div>
     <span class="brand-text">Social <span>Generator</span></span>
   </div>
   <span class="version">v2.0</span>
