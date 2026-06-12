@@ -435,7 +435,7 @@ function render(){
   }
 
   // Vertical centering
-  const badgeR  = Math.round(W * (isStory?.07:.075));
+  const badgeR  = Math.round(W * (isStory?.055:.06));
   const badgeX  = layoutStyle==='split' ? W*.22 : (layoutStyle==='left' ? W*.08+badgeR : cx);
   const badgeY  = isStory ? cy*.7 : cy;
 
@@ -480,7 +480,7 @@ function render(){
 
     // "BC" text — white, official logo style
     ctx.fillStyle = '#ffffff';
-    ctx.font = `800 ${Math.round(badgeR*.64)}px 'Syne', sans-serif`;
+    ctx.font = `800 ${Math.round(badgeR*.46)}px 'Syne', sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('BC', bx, by);
@@ -547,7 +547,7 @@ function drawHex(ctx, cx, cy, r, color, glow, fillInside=true){
       ctx.fillStyle = '#0a0d18';
       ctx.fill();
     }
-    ctx.lineWidth = r*.08;
+    ctx.lineWidth = r*.05;
     ctx.strokeStyle = color;
     ctx.stroke();
   }
